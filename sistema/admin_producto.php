@@ -40,7 +40,7 @@ $links=permission_usr($id_user,$filename);
 		<div class="col-lg-12">
 			<div class="ibox float-e-margins">
 				<?php
-				if ($links!='NOT' || $admin=='1' ){
+				if ($links!='NOT' || $admin=='1' ){ 
 
 					echo "<div class='ibox-title'>";
 					$filename='agregar_producto.php';

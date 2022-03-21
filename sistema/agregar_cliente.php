@@ -210,7 +210,6 @@ function insertar()
   $categoria=$_POST["categoria"];
   $porcentaje=$_POST["porcentaje"];
 
-  $porcentaje=$_POST["porcentaje"];
   if($porcentaje == 1)
   {
     $retiene = 1;

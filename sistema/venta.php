@@ -202,12 +202,12 @@ a {
                     $filename='agregar_ingreso_caja.php';
                     $link=permission_usr($id_user, $filename);
                     if ($link!='NOT' || $admin=='1') {
-                      echo "<a id='xa' data-toggle='modal' href='agregar_ingreso_caja_v.php'  style='margin-right:1%;'  data-target='#viewModal2' data-refresh='true' class='btn btn-sm btn-warning pull-right'><i class='fa fa-plus icon-large'></i> F10 Ingreso</a>";
+                      echo "<a id='xb' data-toggle='modal' href='agregar_ingreso_caja_v.php'  style='margin-right:1%;'  data-target='#viewModal2' data-refresh='true' class='btn btn-sm btn-warning pull-right'><i class='fa fa-plus icon-large'></i> F10 Ingreso</a>";
                     }
                     $filename='agregar_salida_caja.php';
                     $link=permission_usr($id_user, $filename);
                     if ($link!='NOT' || $admin=='1') {
-                      echo "<a id='xb' data-toggle='modal' href='agregar_salida_caja_v.php' style='margin-right:1%;' data-target='#salidaModal' data-refresh='true' class='btn btn-sm btn-danger pull-right'><i class='fa fa-minus icon-large'></i> F9 Vale</a>";
+                      echo "<a id='xa' data-toggle='modal' href='agregar_salida_caja_v.php' style='margin-right:1%;' data-target='#salidaModal' data-refresh='true' class='btn btn-sm btn-danger pull-right'><i class='fa fa-minus icon-large'></i> F9 Vale</a>";
                     } ?>
 
                             </div>
@@ -767,6 +767,7 @@ a {
     echo "<script src='js/funciones/venta.js?$b=$a'></script>";
     ?>
     <script type="text/javascript">
+
     $(document).on("keyup", "#efectivov", function(evt) {
       if ($("#corr_in").val()=="") {
         $("#efectivov").val("");
@@ -775,6 +776,14 @@ a {
       } else {
       }
     });
+
+    /*Configurar la propiedad AllowClear de la librería Select2 para quitar el boton de borrado de selección en los elementos selects*/
+    $(document).ready(function(){
+        $('select').select2({
+          allowClear: false
+        });
+    });
+
     </script>
     <?php
     echo "<script src='js/plugins/arrowtable/arrow-table.js'></script>";

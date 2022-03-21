@@ -1,5 +1,5 @@
 <?php
-include_once "_core.php";
+include_once "_core.php"; //Carga el complemento de Session y Conexion a DB
 // Page setup
 $_PAGE = array();
 $_PAGE['title'] = 'Dashboard';
@@ -23,7 +23,7 @@ $_PAGE ['links'] .= '<link rel="stylesheet" type="text/css" href="css/main.css">
 
 include_once "header.php";
 include_once "main_menu.php";
-//permiso del script
+//permiso del script (Establece variables para evaluarse o usarse en funciones que requieren validación o control de usuario)
 $id_user=$_SESSION["id_usuario"];
 $id_sucursal = $_SESSION["id_sucursal"];
 $admin=$_SESSION["admin"];
@@ -213,13 +213,14 @@ $admin=$_SESSION["admin"];
 								<div>
 									<table class="table">
 										<?php
+										//Obtener un total de ventas realizadas el dia actual por cada vendedor
 										$fecha_actual = date("Y-m-d");
 										$sql="SELECT DISTINCT factura.id_empleado,usuario.usuario, empleado.nombre FROM factura JOIN usuario ON usuario.id_usuario=factura.id_empleado LEFT JOIN empleado ON empleado.id_empleado=usuario.id_empleado WHERE factura.fecha='$fecha_actual'";
 
 										$result=_query($sql);
 										$cuenta = _num_rows($result);
 										echo _error();
-										if($cuenta > 0)
+										if($cuenta > 0) //Mostrar la información de ventas, sólo si existe
 										{
 											while ($row = _fetch_array($result))
 											{
@@ -229,6 +230,8 @@ $admin=$_SESSION["admin"];
 													// code...
 													$nombre=$row["usuario"];
 												}
+
+												//Buscar los montos SÓLO en registros de ventas que estén ya finalizados
 												$sql_monto = _query("SELECT SUM(total) as total FROM factura WHERE id_empleado = '$id_empleado' AND fecha = '$fecha_actual' AND anulada = 0 AND finalizada = 1 AND caja!=0 AND credito=0");
 												//echo "SELECT SUM(subtotal) as monto FROM factura_detalle WHERE id_empleado = '$id_empleado' AND fecha = '$fecha_actual'";
 
@@ -261,10 +264,12 @@ $admin=$_SESSION["admin"];
 				$fecha=date("Y-m-d");
 				$mes=date("m");
 				$anno=date("Y");
+
+				//Obtener un total general de las ventas del mes actual
 				$sql_general="SELECT ROUND(SUM(factura.total), 2) as total_general FROM factura where month(factura.fecha)='$mes' and year(factura.fecha)='$anno' and factura.anulada=0 and factura.finalizada=1 AND tipo_documento!='DEV'";
 				$sql_exe_general=_query($sql_general);
 				$row_general=_fetch_array($sql_exe_general);
-				$total_general2=$row_general["total_general"];
+				$total_general2=$row_general["total_general"]; //Valor a utilizar en pantalla al usuario admin
 
 				//$sql_producto="SELECT ROUND(SUM(factura.total), 2) as total_productos FROM factura where month(factura.fecha)='$mes' and year(factura.fecha)='$anno' and factura.anulada=0 and factura.id_sucursal='$id_sucursal' and factura.finalizada=1";
 				$sql_producto="SELECT ROUND(SUM(factura.total), 2) as total_productos FROM factura where factura.fecha='$fecha' and factura.anulada=0 and factura.id_sucursal='$id_sucursal' and factura.finalizada=1";
@@ -274,13 +279,15 @@ $admin=$_SESSION["admin"];
 				$total_productos=$row_productos["total_productos"];
 
 
-				$total_general = 0;
+				$total_general = 0; //Total General se resetea en este paso para  conseguir un total del stock de cada producto
+				//Buscar todos los productos que se encuentren en stock para un conteo correspondiente.
 				$sql_stock = _query("SELECT pr.id_producto, SUM(su.stock) as cantidad
 				                     FROM producto AS pr
 				                     JOIN stock AS su ON pr.id_producto=su.id_producto
 				                     WHERE su.stock>0 AND su.id_sucursal='1' GROUP BY su.id_producto ORDER BY pr.descripcion");
+				
 				$contar = _num_rows($sql_stock);
-				if ($contar > 0) {
+				if ($contar > 0) { 			// a los Productos encontrados buscar nuevamente el costo de estos
 				    while ($row = _fetch_array($sql_stock)) {
 				        $id_producto = $row['id_producto'];
 				        $existencias = $row['cantidad'];
@@ -301,7 +308,7 @@ $admin=$_SESSION["admin"];
 				                $exis =  0;
 				            }
 				            $total_costo = round(($costo) * $exis, 4);
-				            $total_general += $total_costo;
+				            $total_general += $total_costo; // Al total general obtenido se suma el costo de cada producto para obtener el monto total de la inversion en stock. (Total general fue reseteado anteriormente)
 				        }
 							}
 						}
@@ -375,6 +382,7 @@ $admin=$_SESSION["admin"];
 										</tr>
 										<?php
 										$fecha_actual = date("Y-m-d");
+										//obtener las referencias de faturas pendientes por finalizar
 										$sql="SELECT cliente.nombre, factura.total,numero_ref FROM factura JOIN cliente ON cliente.id_cliente=factura.id_cliente WHERE numero_ref!=0 AND fecha='".date("Y-m-d")."' AND finalizada!=1 AND factura.id_sucursal=1 LIMIT 5";
 
 										$result=_query($sql);
@@ -416,6 +424,7 @@ $admin=$_SESSION["admin"];
 									<table class="table">
 										<tbody>
 										<?php
+										//Obtener la sucursal activa para realizar el evalúo de la caja activa
 										$id_sucursal=$_SESSION['id_sucursal'];
 
 										$hoy=date("Y-m-d");

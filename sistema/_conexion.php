@@ -2,7 +2,7 @@
 //$username = "root";
 //$password = "admin$2021**.";
 $username = "root";
-$password = "admin$2022**.";
+$password = "";
 $hostname = "localhost";
 $dbname = "elpacifico";
 date_default_timezone_set('America/El_Salvador');
@@ -950,13 +950,16 @@ function _update_s($table_name, $form_data, $where_clause='')
     // run and return the query result
     return _query($sql);
 }
-//para API MOVIL
+
+//------- para API MOVIL ----------
+//Obtener todos los datos obtenidos por la query
 function _fetch_all($query_str){
     global $conexion;
     $query = _query($query_str);
     return mysqli_fetch_all($query, MYSQLI_ASSOC);
 }
 
+//Obtener sólo el primer registro obtenido de la query 
 function _fetch_one($query_str){
     global $conexion;
     $query = _query($query_str);
